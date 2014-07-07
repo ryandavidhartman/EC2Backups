@@ -40,6 +40,7 @@ namespace AWS_Backups
 
         public static void DeleteOldSnapshots(List<string> volumeIds, int maxDays)
         {
+
             var describeSnapshotsRequest = new DescribeSnapshotsRequest
             {
                 Filters = new List<Filter> { new Filter { Name = "volume-id", Values = volumeIds } }
@@ -50,9 +51,13 @@ namespace AWS_Backups
             foreach (var snapshot in describeSnapshotsResponse.Snapshots)
             {
                 var age = (DateTime.UtcNow - snapshot.StartTime.ToUniversalTime()).TotalDays;
+
                 Console.WriteLine("Description: {0} Age:{1}", snapshot.Description, age);
                 if (age > maxDays)
                 {
+                    if (snapshot.Description.Contains("Created by CreateImage"))
+                        break;
+                    
                     Console.WriteLine("Deleting ");
                     Ec2Client.DeleteSnapshot(new DeleteSnapshotRequest {SnapshotId = snapshot.SnapshotId});
                 }
