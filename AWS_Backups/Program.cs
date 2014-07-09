@@ -56,7 +56,7 @@ namespace AWS_Backups
                 if (age > maxDays)
                 {
                     if (snapshot.Description.Contains("Created by CreateImage"))
-                        break;
+                        continue;
                     
                     Console.WriteLine("Deleting ");
                     Ec2Client.DeleteSnapshot(new DeleteSnapshotRequest {SnapshotId = snapshot.SnapshotId});
